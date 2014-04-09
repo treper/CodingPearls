@@ -175,14 +175,217 @@ int WordLadderPath(vector<string>& dict,string& start,string& end)
 	dfs(dict,start,end,path);
 
 }
+//Breath First Search
+void WordLadderII(unordered_set<string>& dict,string& start, string& end)
+{
+	unordered_set<string> current,next;
+	unordered_set<string> visited;
+	unordered_map<string,vector<string> > parent;
+	current.insert(start);
+	while(!current.empty() && !current.count(end))
+	{
+		for(auto & cur:current) visited.insert(cur);
+		for(auto & cur:current) 
+		{
+			string newword=cur;
+			for(int i=0;i<newword.size();i++)
+			{
+				for(char c='a';c<'z';c++)
+				{
+					if(newword[i]==c) continue;
+					char t = newword[i];
+					newword[i]=c;
+					if(newword==end ||(dict.count(newword)!=0 && visited.count(newword)==0))
+					{
+						parent[newword].push_back(cur);
+						next.insert(newword);
+					}
+					newword[i]=t;
+				}
+			}
+		}
+		current.clear();
+		swap(current,next);
+	}
+	vector<string> path;
+	vector<vector<string> > resutls;
+	buildPath(start,end,parent,path,results);
+}
 
-void WordLadderStepCount()
+//parent is a tree like structure ,DFS to build path
+void buildPath(string& start,string& end, unordered_map<string,vector<string> >& parent, vector<string>& path,vector<vector<string> > results)
+{
+	if(current==end)
+	{
+		results.push_back(vector<string>(path.rbegin(),paht.rend()));
+		return;
+	}
+	for(auto & next:parent[start])
+	{
+		path.push_back(next);
+		buildPath(next,end,parent,path,results);
+		path.pop_back();
+	}
 
 
+}
+
+int WordLadderStepCount(unordered_set<stirng>& dict,string& start,string& end)
+{
+	unordered_set<string> visited;
+	queue<string> current,next;
+	current.push_back(start);visited.insert(start);
+	int level=1;
+	while(!current.empty())
+	{
+		while(!current.empty())
+		{
+			string newword = current.front();
+			current.pop();
+			for(int i=0;i<newword.size();i++)
+			{
+				for(char c='a';c<='z';c++)
+				{
+					if(newword[i]==c)continue;
+					char t = newword[i];
+					newword[i]=c;
+					if(newword==end)
+						return level+1;
+					if(dict.count(newword)!=0 && visited.count(newword)==0)
+					{
+						next.insert(newword);
+					}
+				}
+			}
+		}
+		swap(current,next);
+		level++;
+	}
+	return 0;
+}
 
 
+void SurroundedRegions(vector<vector<string> >& board)
+{
+	if(board.empty()|| board[0].empty()) return;
+	int m = board.size(),n = board[0].size();
+	//把边缘点及其邻域点中为‘O’的排除，都标记为*
+	for(int i=0;i<m;i++)
+	{
+		if(board[i][0]=='O') bfs(board,m,n,i,0);
+		if(board[i][n-1]=='O') bfs(board,m,n,i,n-1);
+	}
+
+	for(int i=0;i<n;i++)
+	{
+		if(board[0][i]=='O') bfs(board,m,n,0,i);
+		if(board[m-1][i]=='O') bfs(board,m,n,m-1,i);
+	}
 
 
+	for (int i = 0; i < M; i++)
+	{
+		for (int j = 0; j < N; j++) 
+		{
+                if (board[i][j] == '*') board[i][j] = 'O';
+                else if (board[i][j] == 'O') board[i][j] = 'X';
+        }
+    }
+
+}
+void bfs(vector<vector<string> >& board,int m,int n,int i,int j)
+{
+	board[i][j]='*';
+	queue<int> qs;
+	qs.push(i*n+j);
+	while(!qs.empty())
+	{
+		i=qs.front()/n,j=qs.front()%n;
+		qs.pop();
+		for(int k=0;k<4;k++)
+		{
+			int ni=i+di[k],nj=j+dj[k];
+			if(ni==-1||ni==m||nj==-1||nj==n||board[ni][nj]!='O') continue;
+			board[ni][nj]='*';
+			qs.push(ni*n+nj);
+		}
+	}
+
+}
+
+
+//
+//aab --> [[aa,b],[a,a,b]]
+//complexity is O(2^n),space complexity is O(n)
+//str[0,prev-1]已经处理，保证是回文串
+//prev 表示str[prev-1]与str[prev]之间的空隙位置,start也同理
+PalindromePartitionDFS(string& input,int prev,int start,vector<string>& intermidates,vector<string>& results)
+{
+
+	if(start==input.size())//
+	{
+		if(isPalindrome(str,prev,start-1))
+		{
+			intermidates.push_back(input.substr(prev,start-prev));
+			results.push_back(intermidates);
+			intermidates.pop_back();
+		}	
+	}
+	//不断开
+	PalindromePartitionDFS(input,prev,start+1,intermidates,results);
+	//如果str[prev,start-1]是回文,可以断开，也可以不断开，不断开为上一行
+	if(isPalindrome(input,prev,start-1))
+	{
+		intermidates.push_back(input.substr(prev,start-prev));
+		PalindromePartitionDFS(input,start,start+1,intermidates,results);
+		intermidates.pop_back();
+	}
+
+}
+bool isPalindrome(string& str,int start,int end)
+{
+	while(start<end)
+	{
+		if(s[start++]!=s[end--]) return false;
+
+	}
+	return true;
+}
+//
+PalindromePartitionDP(string& str)
+{
+	int n = str.size();
+	vector<vector<bool> > isPalindrome(n,vector<bool>(n,false));
+	vector<vector<vector<string> > > dp2(n,vector<vector<string > >())
+	for(int i=0;i<n;i++)
+	{
+		for(int j=i;j>0;j--)
+		{
+			if(str[i]==s[j] && (i-j<2 ||str[j+1]==str[i-1]))
+			{
+				isPalindrome[i][j]=true;
+			}
+			if(j==0)
+			{
+				dp2[i].push_back(vector<string>(1,s.substr(0,i-j+1)));
+			}
+			else
+			{
+				for(auto p:dp2[j-1])
+				{
+					p.push_back(s.substr(i,l));
+					dp2[i].push_back(p);
+				}
+			}
+		}
+		
+	}
+	return dp2[n-1];
+}
+RestoreIPAddress(string& str,int step,string& intermidates,vector<string>& results)
+{
+
+}
 
 
 
